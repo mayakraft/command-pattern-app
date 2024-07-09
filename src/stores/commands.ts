@@ -1,142 +1,105 @@
-import { Mesh, UIManager } from "./receivers.ts";
+import { execute } from "./shell.ts";
+import { formatCommandResult } from "../js/format.ts";
 
-// Command Interface (abstract base classs)
-export class Command {
-	execute() {}
-	undo() {}
+interface Command {
+	execute(): any;
+	undo(): any;
+  get asString(): string;
 }
 
-export class SimplifyMeshCommand implements Command {
-    private mesh: Mesh;
+// Create a command class
+export class JsBlobCommand implements Command {
+	private jsBlob: string;
 
-    constructor(mesh: Mesh) {
-        this.mesh = mesh;
-    }
-
-    execute() {
-        this.mesh.simplify();
-    }
-
-    undo() {
-        console.log("Undo simplify mesh");
-    }
-}
-
-export class AddFaceCommand implements Command {
-    private mesh: Mesh;
-
-    constructor(mesh: Mesh) {
-        this.mesh = mesh;
-    }
-
-    execute() {
-        this.mesh.addFace();
-    }
-
-    undo() {
-        this.mesh.removeFace();
-    }
-}
-
-export class RemoveFaceCommand implements Command {
-    private mesh: Mesh;
-
-    constructor(mesh: Mesh) {
-        this.mesh = mesh;
-    }
-
-    execute() {
-        this.mesh.removeFace();
-    }
-
-    undo() {
-        this.mesh.addFace();
-    }
-}
-
-export class SplitFaceCommand implements Command {
-    private mesh: Mesh;
-
-    constructor(mesh: Mesh) {
-        this.mesh = mesh;
-    }
-
-    execute() {
-        this.mesh.splitFace();
-    }
-
-    undo() {
-        console.log("Undo split face");
-    }
-}
-
-export class TriangulateMeshCommand implements Command {
-    private mesh: Mesh;
-
-    constructor(mesh: Mesh) {
-        this.mesh = mesh;
-    }
-
-    execute() {
-        this.mesh.triangulate();
-    }
-
-    undo() {
-        console.log("Undo triangulate mesh");
-    }
-}
-
-
-export class SelectToolCommand implements Command {
-    private uiManager: UIManager;
-    private tool: string;
-
-    constructor(uiManager: UIManager, tool: string) {
-        this.uiManager = uiManager;
-        this.tool = tool;
-    }
-
-    execute() {
-        this.uiManager.selectTool(this.tool);
-    }
-
-    undo() {
-        console.log(`Undo select tool: ${this.tool}`);
-    }
-}
-
-export class AddToSelectionCommand implements Command {
-	private uiManager: UIManager;
-	private item: string;
-
-	constructor(uiManager: UIManager, item: string) {
-		this.uiManager = uiManager;
-		this.item = item;
+	constructor(jsBlob: string) {
+		this.jsBlob = jsBlob;
 	}
 
-	execute() {
-		this.uiManager.addToSelection(this.item);
+	get asString(): string {
+		return this.jsBlob;
 	}
 
-	undo() {
-		this.uiManager.removeFromSelection(this.item);
+	execute(): any {
+		return execute(this.jsBlob);
+	}
+
+	undo(): any {
+		// Implement undo logic. For now, we'll just log a message.
+		console.log("Undoing:", this.jsBlob);
+		// You can implement actual undo logic here.
 	}
 }
 
-export class RemoveFromSelectionCommand implements Command {
-	private uiManager: UIManager;
-	private item: string;
+class CommandResult {
+  private result: any;
+  private stringified: string;
 
-	constructor(uiManager: UIManager, item: string) {
-		this.uiManager = uiManager;
-		this.item = item;
+	get asString(): string {
+    return this.stringified;
 	}
 
-	execute() {
-		this.uiManager.removeFromSelection(this.item);
+	constructor(result: any) {
+		this.result = result;
+    this.stringified = formatCommandResult(result) || "";
+	}
+}
+
+type CommandAndResult = {
+	command: Command,
+	result: CommandResult,
+};
+
+class CommandHistory {
+	private history: CommandAndResult[] = [];
+	private commandStrings: string[] = [];
+
+	push({ command, result }: CommandAndResult): void {
+		this.history.push({ command, result });
 	}
 
-	undo() {
-		this.uiManager.addToSelection(this.item);
+	pop(): CommandAndResult | undefined {
+		return this.history.pop();
+	}
+
+	clear(): void {
+		this.history = [];
+	}
+
+	getHistoryString(): string {
+		console.log("this.history", this.history);
+    console.log("h", this.history.map(el => el.result));
+		// return this.history.map(el => (el.command as any).asString).join('\n');
+		return this.history
+			.map(el => `${el.command.asString}\n${el.result.asString}`)
+			.join('\n');
+	}
+}
+
+export class CommandExecutor {
+	private history: CommandHistory = new CommandHistory();
+
+	executeCommand(command: Command): any {
+		const res = command.execute();
+    const result = new CommandResult(res);
+		this.history.push({ command, result });
+		return result;
+	}
+
+	undo(): any {
+		const latest = this.history.pop();
+		if (!latest) {
+      console.log("no command to undo");
+      return;
+		}
+    const { command, result } = latest;
+		if (command) {
+			return command.undo();
+		} else {
+			console.log("No commands to undo.");
+		}
+	}
+
+	getHistoryString(): string {
+		return this.history.getHistoryString();
 	}
 }

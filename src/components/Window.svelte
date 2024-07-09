@@ -12,7 +12,7 @@
 	width: 100%;
 	height: 100%;
 	margin: auto;
-	padding: 15%;
+	padding: 15vh 15vw;
 }
 .container {
 	width: 100%;

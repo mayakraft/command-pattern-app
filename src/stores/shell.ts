@@ -1,28 +1,8 @@
-// import ear from "rabbit-ear";
-// import Commands from "./commands/index.js";
-// import {
-// 	terminalOutputCommandResult,
-// 	terminalOutputJavascript,
-// 	terminalOutputError,
-// } from "./format.js";
-import { Invoker } from "./invoker.ts";
-import { Mesh, UIManager } from "./receivers.ts";
-import { MeshProxy, UIManagerProxy } from "./commandProxys.ts";
+// import { scope } from "./client.ts";
 
+const scope = {};
 
-const invoker = new Invoker();
-const mesh = new Mesh();
-const uiManager = new UIManager();
-
-// the context which will bind to the Function's this.
-// const context = Object.assign({ ...ear }, Commands);
-const scope = {
-	mesh: new MeshProxy(mesh, invoker),
-	uiManager: new UIManagerProxy(uiManager, invoker),
-	invoker,
-};
-
-// const scope = {};
+const shouldUseStrict = true;
 
 // transfer all methods/constants from inside the "this."
 // and into the top level of the scope.
@@ -40,16 +20,15 @@ const hoist = Object.keys(scope)
  * "undefined" if nothing is returned.
  */
 const scopedEval = (jsBlob: string, scope: object): any => {
+  const line0 = shouldUseStrict ? '"use strict";' : ";";
 	// const fileString = files
 	// 	.map(f => `var ${f.name} = this.${f.name};`).join("");
+	// hoist = hoist + fileString;
 	try {
-		// return Function(`; ${hoist}; ${fileString}; return ${jsBlob}`).bind(scope)();
-		// return Function(`; ${hoist}; return ${jsBlob}`).bind(scope)();
-		return Function(`"use strict"; ${hoist}; return (` + jsBlob + ")").bind(scope)();
+    return Function(`${line0} ${hoist}; return (${jsBlob})`).bind(scope)();
 	} catch (e) {
 		try {
-			// return Function(`; ${hoist}; ${jsBlob}`).bind(scope)();
-			return Function(`"use strict"; ${hoist};` + jsBlob).bind(scope)();
+			return Function(`${line0} ${hoist}; ${jsBlob}`).bind(scope)();
 		} catch (error) {
 			// throw error;
 			console.error(error);
@@ -57,37 +36,6 @@ const scopedEval = (jsBlob: string, scope: object): any => {
 	}
 };
 
-/**
- * @description run a javascript blob in an eval context which includes
- * all commands from the core of the app.
- * @param {string} jsBlob a javascript snippet
- * @returns {object[]} an array of objects meant for printing
- * as output into the terminal.
- */
-// export const run = (jsBlob: string): object[] => {
-// 	let result;
-// 	try {
-// 		// files.forEach(f => { context[f.name] = f.contents; });
-// 		result = scopedEval(jsBlob, context);
-// 	} catch (error) {
-// 		console.error(error);
-// 		return [terminalOutputJavascript(jsBlob), terminalOutputError(error)];
-// 	}
-// 	// if the scoped eval returns undefined, the resulting html string
-// 	// will be an empty string, if this is the case, don't include empty
-// 	// strings in the terminal output.
-// 	return [
-// 		terminalOutputJavascript(jsBlob),
-// 		terminalOutputCommandResult(result),
-// 	].filter((a) => a.html !== undefined);
-// };
-
 export const execute = (jsBlob: string): object[] => (
-  scopedEval(jsBlob, scope)
+	scopedEval(jsBlob, scope)
 );
-
-// Example of user input to simplify the mesh
-// execute("mesh.simplify();");
-
-// Example of user input to select a tool
-// execute(`uiManager.selectTool("move");`);

@@ -1,5 +1,5 @@
 import { writable, derived } from "svelte/store";
-import { execute } from "./shell.ts";
+import { terminalExecute } from "./terminal.ts";
 import { TerminalTextarea, TerminalTextareaValue } from "./dom.ts";
 
 /**
@@ -75,7 +75,7 @@ const FormKeyboardDown = derived(
 				case "NumpadEnter":
 					if (!event.shiftKey) {
 						event.preventDefault();
-						execute($TerminalTextareaValue);
+						terminalExecute($TerminalTextareaValue);
 						TerminalTextareaValue.set("");
 					}
 				break;

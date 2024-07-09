@@ -1,17 +1,16 @@
-<script>
-	// import { afterUpdate } from "svelte";
-	import { TerminalHistory } from "../stores/terminal.ts";
+<script lang="ts">
+	import { TerminalHistoryHTMLString } from "../stores/terminal.ts";
 	import {
 		TerminalTextarea,
 		TerminalTextareaValue,
 	} from "../stores/dom.ts";
 
-	let pre;
-	// afterUpdate(() => { pre.scrollTop = pre.scrollHeight; });
+	let pre: Element;
+	$effect(() => { pre.scrollTop = pre.scrollHeight; });
 </script>
 
 <div class="container">
-	<pre bind:this={pre}>{#each $TerminalHistory as el}{@html el.html}<br/>{/each}</pre>
+	<pre bind:this={pre}>{@html $TerminalHistoryHTMLString}</pre>
 	<textarea
 		bind:this={$TerminalTextarea}
 		bind:value={$TerminalTextareaValue}
@@ -37,9 +36,6 @@
 		overflow-y: scroll;
 		font-family: monospace;
 		background-color: #292929;
-	}
-	pre > * {
-		margin: 0;
 	}
 	/* all text selection has been disabled in the app. */
 	/* we have to explicitly re-enable it here */
