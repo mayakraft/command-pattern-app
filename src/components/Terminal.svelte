@@ -6,6 +6,7 @@
 	} from "../stores/dom.ts";
 
 	let pre: Element;
+	// todo: this is not firing
 	$effect(() => { pre.scrollTop = pre.scrollHeight; });
 </script>
 

@@ -3,9 +3,7 @@ export interface Tokenizable {
 	get asTokenString(): string; // with html tags
 }
 
-export interface Command {
+export interface Command extends Tokenizable {
 	execute(): any;
 	undo(): any;
-	get asString(): string;
-	get asTokenString(): string; // with html tags
 }

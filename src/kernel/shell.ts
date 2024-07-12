@@ -1,6 +1,6 @@
 import { scope } from "./scope.ts";
 
-const shouldUseStrict = false;
+const shouldUseStrict = true;
 
 // transfer all methods/constants from inside the "this."
 // and into the top level of the scope.

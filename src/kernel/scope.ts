@@ -2,7 +2,7 @@
 // import { Invoker } from "./invoker.ts";
 // import { Mesh, UIManager } from "./receivers.ts";
 // import { MeshProxy, UIManagerProxy } from "./commandProxys.ts";
-import { ChangeBackgroundColorCommand } from "./commands.ts";
+import { ChangeBackgroundColorCommand } from "../commands/commands.ts";
 import { invoker } from "./invoker.ts";
 
 // export const invoker = new Invoker();
@@ -19,5 +19,5 @@ import { invoker } from "./invoker.ts";
 
 export const scope = {
 	background: (color: string) => invoker
-		.execute(new ChangeBackgroundColorCommand(color)),
+		.executeCommand(new ChangeBackgroundColorCommand(color)),
 };

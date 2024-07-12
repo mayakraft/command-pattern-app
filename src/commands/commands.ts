@@ -1,6 +1,6 @@
-import { execute } from "./shell.ts";
+import { execute } from "../kernel/shell.ts";
 import { formatJavascript } from "../js/format.ts";
-import { type Command, type Tokenizable } from "./command.ts";
+import { type Command } from "./command.ts";
 
 // Create a command class
 export class JavascriptCommand implements Command {
@@ -19,7 +19,7 @@ export class JavascriptCommand implements Command {
 	}
 
 	execute(): any {
-		console.log(`JavascriptCommand execute(${this.asString})`);
+		// console.log(`JavascriptCommand execute(${this.asString})`);
 		return execute(this.js);
 	}
 
