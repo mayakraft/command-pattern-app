@@ -44,6 +44,10 @@
 		user-select: initial;
 		cursor: auto;
 	}
+	pre :global(.result::before) {
+		content: "> ";
+		color: #888;
+	}
 	textarea {
 		height: 1rem;
 		flex: 0 0 auto;

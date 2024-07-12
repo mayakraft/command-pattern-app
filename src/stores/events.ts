@@ -1,6 +1,7 @@
 import { writable, derived } from "svelte/store";
-import { terminalExecute } from "./terminal.ts";
+import { terminalExecute, terminalUndo } from "./terminal.ts";
 import { TerminalTextarea, TerminalTextareaValue } from "./dom.ts";
+import { executeCommand } from "./shell.ts";
 
 /**
  * @description Query the document.activeElement and depending on
@@ -68,17 +69,24 @@ const FormKeyboardUp = derived(
 const FormKeyboardDown = derived(
 	[TerminalTextarea, TerminalTextareaValue],
 	([$TerminalTextarea, $TerminalTextareaValue]) => (event: KeyboardEvent) => {
+		const { altKey, ctrlKey, metaKey, shiftKey } = event;
 		// console.log("FormKeyboardEvent Down");
 		if (document.activeElement === $TerminalTextarea) {
 			switch (event.key) {
 				case "Enter":
-				case "NumpadEnter":
-					if (!event.shiftKey) {
-						event.preventDefault();
-						terminalExecute($TerminalTextareaValue);
-						TerminalTextareaValue.set("");
-					}
+        case "NumpadEnter":
+          if (!event.shiftKey) {
+            event.preventDefault();
+            terminalExecute($TerminalTextareaValue);
+            TerminalTextareaValue.set("");
+          }
+        break;
+				case "z":
+				case "Z":
+					if (metaKey || ctrlKey) { terminalUndo(); }
 				break;
+				case "b":
+          if (shiftKey) { executeCommand("background", `hsl(${Math.random() * 360}, 50%, 50%)`); }
 				// case 38: // up arrow key
 				// 	ReplayCommandIndex.decrement();
 				// 	TerminalTextareaValue.set(get(ReplayCommand).text);

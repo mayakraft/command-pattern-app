@@ -1,4 +1,4 @@
-// import jsTokens from "../lib/js-tokens/index.js";
+import jsTokens from "../lib/js-tokens/index.js";
 
 /**
  * @description Maximum string length in terminal
@@ -11,10 +11,10 @@ const MAX_LENGTH = 150;
  * element marked with the class name of the token type.
  * @returns {string} HTML string
  */
-// const formatJavascript = (js: string): string =>
-// 	Array.from(jsTokens(js))
-// 		.map(({ type, value }) => `<span class=${type}>${value}</span>`)
-// 		.join("");
+export const formatJavascript = (js: string): string =>
+	Array.from(jsTokens(js))
+		.map(({ type, value }) => `<span class=${type}>${value}</span>`)
+		.join("");
 
 /**
  * @description clip extremely long commands,

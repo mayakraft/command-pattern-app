@@ -2,12 +2,9 @@ import { readable, writable, derived, type Writable } from "svelte/store";
 import { arrayIntersection } from "../js/arrays.ts";
 import { TerminalTextareaValue } from "./dom.ts";
 // import { invoker } from "./client.ts";
-import { JsBlobCommand } from "./commands.ts";
+import { JavascriptCommand } from "./commands.ts";
 import { execute } from "./shell.ts";
-import { CommandExecutor } from "./commands.ts";
-
-export const executor = new CommandExecutor();
-
+import { invoker } from "./invoker.ts";
 
 // import {
 // 	terminalOutputCommandResult,
@@ -167,13 +164,13 @@ export const TerminalHistoryHTMLString = writable<string>("");
  */
 export const terminalExecute = (jsBlob: string): void => {
 	let result;
-	const command = new JsBlobCommand(jsBlob);
+	const command = new JavascriptCommand(jsBlob);
 	try {
 		// files.forEach(f => { context[f.name] = f.contents; });
 		// result = execute(jsBlob);
-		executor.executeCommand(command);
+		invoker.execute(command);
 
-    TerminalHistoryHTMLString.set(executor.getHistoryString());
+		TerminalHistoryHTMLString.set(invoker.getHistoryString());
 
 	} catch (error) {
 		console.error(error);
@@ -186,4 +183,9 @@ export const terminalExecute = (jsBlob: string): void => {
 	// 	terminalOutputJavascript(jsBlob),
 	// 	terminalOutputCommandResult(result),
 	// ].filter((a) => a.html !== undefined);
+};
+
+export const terminalUndo = () => {
+	invoker.undo();
+	TerminalHistoryHTMLString.set(invoker.getHistoryString());
 };

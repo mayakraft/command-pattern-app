@@ -1,105 +1,63 @@
 import { execute } from "./shell.ts";
-import { formatCommandResult } from "../js/format.ts";
-
-interface Command {
-	execute(): any;
-	undo(): any;
-  get asString(): string;
-}
+import { formatJavascript } from "../js/format.ts";
+import { type Command, type Tokenizable } from "./command.ts";
 
 // Create a command class
-export class JsBlobCommand implements Command {
-	private jsBlob: string;
+export class JavascriptCommand implements Command {
+	private js: string;
 
-	constructor(jsBlob: string) {
-		this.jsBlob = jsBlob;
+	constructor(js: string) {
+		this.js = js;
 	}
 
 	get asString(): string {
-		return this.jsBlob;
+		return this.js;
+	}
+
+	get asTokenString(): string {
+		return formatJavascript(this.asString);
 	}
 
 	execute(): any {
-		return execute(this.jsBlob);
+		console.log(`JavascriptCommand execute(${this.asString})`);
+		return execute(this.js);
 	}
 
 	undo(): any {
-		// Implement undo logic. For now, we'll just log a message.
-		console.log("Undoing:", this.jsBlob);
-		// You can implement actual undo logic here.
+		console.log("Undoing:", this.js);
 	}
 }
 
-class CommandResult {
-  private result: any;
-  private stringified: string;
+export class ChangeBackgroundColorCommand implements Command {
+	private color: string;
+	private previousColor: string | null;
+
+	constructor(color: string) {
+		this.color = color;
+		this.previousColor = document.body.style.backgroundColor
+			|| getComputedStyle(document.body)["background-color"];
+	}
 
 	get asString(): string {
-    return this.stringified;
+		return `background(${JSON.stringify(this.color)})`;
 	}
 
-	constructor(result: any) {
-		this.result = result;
-    this.stringified = formatCommandResult(result) || "";
-	}
-}
-
-type CommandAndResult = {
-	command: Command,
-	result: CommandResult,
-};
-
-class CommandHistory {
-	private history: CommandAndResult[] = [];
-	private commandStrings: string[] = [];
-
-	push({ command, result }: CommandAndResult): void {
-		this.history.push({ command, result });
+	get asTokenString(): string {
+		// return `<span style="color:${this.color}">Change background to ${this.color}</span>`;
+		return formatJavascript(this.asString);
 	}
 
-	pop(): CommandAndResult | undefined {
-		return this.history.pop();
-	}
-
-	clear(): void {
-		this.history = [];
-	}
-
-	getHistoryString(): string {
-		console.log("this.history", this.history);
-    console.log("h", this.history.map(el => el.result));
-		// return this.history.map(el => (el.command as any).asString).join('\n');
-		return this.history
-			.map(el => `${el.command.asString}\n${el.result.asString}`)
-			.join('\n');
-	}
-}
-
-export class CommandExecutor {
-	private history: CommandHistory = new CommandHistory();
-
-	executeCommand(command: Command): any {
-		const res = command.execute();
-    const result = new CommandResult(res);
-		this.history.push({ command, result });
-		return result;
+	execute(): any {
+		this.previousColor = document.body.style.backgroundColor
+			|| getComputedStyle(document.body)["background-color"];
+		document.body.style.backgroundColor = this.color;
 	}
 
 	undo(): any {
-		const latest = this.history.pop();
-		if (!latest) {
-      console.log("no command to undo");
-      return;
-		}
-    const { command, result } = latest;
-		if (command) {
-			return command.undo();
+		if (this.previousColor) {
+			document.body.style.backgroundColor = this.previousColor;
 		} else {
-			console.log("No commands to undo.");
-		}
-	}
 
-	getHistoryString(): string {
-		return this.history.getHistoryString();
+		}
 	}
 }
