@@ -1,23 +1,13 @@
 // import ear from "rabbit-ear";
-// import { Invoker } from "./invoker.ts";
-// import { Mesh, UIManager } from "./receivers.ts";
-// import { MeshProxy, UIManagerProxy } from "./commandProxys.ts";
-import { ChangeBackgroundColorCommand } from "../commands/commands.ts";
+import { ChangeBackgroundColorCommand } from "../commands/background.ts";
 import { invoker } from "./invoker.ts";
 
-// export const invoker = new Invoker();
-// const mesh = new Mesh();
-// const uiManager = new UIManager();
+// all command should be bound to this scope object.
 
-// // the context which will bind to the Function's this.
-// // const context = Object.assign({ ...ear }, Commands);
-// export const scope = {
-// 	mesh: new MeshProxy(mesh, invoker),
-// 	uiManager: new UIManagerProxy(uiManager, invoker),
-// 	invoker,
-// };
-
+// the context which will bind to the Function's this.
+// const context = Object.assign({ ...ear }, Commands);
 export const scope = {
+	// invoker,
 	background: (color: string) => invoker
 		.executeCommand(new ChangeBackgroundColorCommand(color)),
 };

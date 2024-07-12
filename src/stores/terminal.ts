@@ -2,36 +2,21 @@ import { get, writable, derived } from "svelte/store";
 import { invoker } from "../kernel/invoker.ts";
 
 /**
- * @description On boot or after the history is cleared,
- * terminal will pad the history with empty new lines
- * until it reaches at least this many. The reason for this
- * is because the text container is top-justified, and when
- * only one command is added we want the command to be at the bottom.
- * Technically, this operates on TerminalHistory, not CommandHistory.
- */
-const minLineCount = 24;
-
-/**
- * @description Terminal will only save the most recent N number of commands
- * in its history.
- * Technically, this operates on CommandHistory, not TerminalHistory.
- */
-const maxLineCount = 300;
-
-/**
  * @description A record of the history, as a single string where each
  * line contains one history element, wrapped inside of an HTML span
  * element, with a class indicating if it was a result or not.
  */
 export const TerminalHistoryHTMLString = derived(
 	invoker.historyAsHTML,
-	($entries) => Array(Math.max(0, minLineCount - $entries.length))
-    .fill("<span></span>")
-    .concat($entries)
-    .join("\n"),
+	($entries) => $entries.join("\n"),
 	"",
 );
 
+/**
+ * @description a subroutine of the TerminalReprint store. get the
+ * commandHistory and return the item at the index parameter,
+ * or an empty string if length of 0.
+ */
 const getCommandFromHistory = (index: number): string => {
 	const arr = get(invoker.commandHistory);
 	if (!arr.length) { return ""; }
@@ -40,14 +25,22 @@ const getCommandFromHistory = (index: number): string => {
 	return arr[arrayIndex];
 };
 
+/**
+ * @description This captures the behavior of being at a terminal input and
+ * using the up/down arrow keys to scroll through the history.
+ * The value of this writable store is an integer, the index of the currently
+ * selected command in the history. Call "increment" or "decrement" and a side-
+ * effect will fire, one which will get() the invoker.commandHistory and
+ * return the string of the currently selected command in the history.
+ */
 export const TerminalReprint = {
 	...writable(0),
-	increment: () => {
+	increment: (): string => {
     let index = 0;
     TerminalReprint.update(n => { index = n + 1; return index; });
     return getCommandFromHistory(index);
 	},
-	decrement: () => {
+	decrement: (): string => {
     let index = 0;
     TerminalReprint.update(n => { index = n - 1; return index; });
     return getCommandFromHistory(index);

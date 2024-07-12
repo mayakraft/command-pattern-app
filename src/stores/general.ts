@@ -1,5 +1,8 @@
 import { type Writable, writable } from "svelte/store";
 
+/**
+ * @description the type definition for the create function below
+ */
 export type WritableArray<Type> = Writable<Type[]> & {
 	push: (el: Type) => void,
   pop: () => Type | undefined,

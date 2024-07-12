@@ -1,32 +1,5 @@
-import { execute } from "../kernel/shell.ts";
-import { formatJavascript } from "../js/format.ts";
 import { type Command } from "./command.ts";
-
-// Create a command class
-export class JavascriptCommand implements Command {
-	private js: string;
-
-	constructor(js: string) {
-		this.js = js;
-	}
-
-	get asString(): string {
-		return this.js;
-	}
-
-	get asTokenString(): string {
-		return formatJavascript(this.asString);
-	}
-
-	execute(): any {
-		// console.log(`JavascriptCommand execute(${this.asString})`);
-		return execute(this.js);
-	}
-
-	undo(): any {
-		console.log("Undoing:", this.js);
-	}
-}
+import { formatJavascript } from "../js/format.ts";
 
 export class ChangeBackgroundColorCommand implements Command {
 	private color: string;
@@ -43,7 +16,6 @@ export class ChangeBackgroundColorCommand implements Command {
 	}
 
 	get asTokenString(): string {
-		// return `<span style="color:${this.color}">Change background to ${this.color}</span>`;
 		return formatJavascript(this.asString);
 	}
 

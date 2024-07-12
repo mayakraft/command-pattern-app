@@ -1,7 +1,7 @@
 import { derived } from "svelte/store";
 import { type WritableArray, createArrayStore } from "../stores/general.ts";
 import { type Command, type Tokenizable } from "../commands/command.ts";
-import { JavascriptCommand } from "../commands/commands.ts";
+import { JavascriptCommand } from "../commands/jsCommand.ts";
 import { formatCommandResult } from "../js/format.ts";
 import { matchFromArray } from "../js/arrays.ts";
 import { scope } from "./scope.ts";
@@ -49,11 +49,10 @@ class Invoker {
 	 */
 	public historyAsHTML = derived<WritableArray<CommandAndResult>, string[]>(
 		this.history,
-		($invokerCommandHistory) => $invokerCommandHistory
-      .flatMap(({ command, result }) => [
-        `<span>${command.asTokenString}</span>`,
-        `<span class="result">${result.asTokenString}</span>`,
-      ]),
+		($history) => $history.flatMap(({ command, result }) => [
+			`<span>${command.asTokenString}</span>`,
+			`<span class="result">${result.asTokenString}</span>`,
+		]),
 		[],
 	);
 
@@ -63,14 +62,17 @@ class Invoker {
 	 */
 	public commandHistory = derived<WritableArray<CommandAndResult>, string[]>(
 		this.history,
-		($invokerCommandHistory) => $invokerCommandHistory
-			.map(({ command }) => command.asString),
+		($history) => $history.map(({ command }) => command.asString),
 		[],
 	);
 
 	executeCommand(command: Command): any {
 		const res = command.execute();
 		const result = new CommandResult(res);
+		// an alternative to this system of checking might be to always print out the
+		// javascript command, perhaps give it a class="metadata" third type of class,
+		// always print the javascript command and possibly? print out the other
+		// commands...? maybe. not sure how undo would work though.
 		if (command instanceof JavascriptCommand
 			&& matchFromArray(command.asString, Object.keys(scope)).length) {
 			// console.log(`! 3b invoker: skipping javascript command ${command.asString}`);
@@ -84,17 +86,17 @@ class Invoker {
     return this.executeCommand(new JavascriptCommand(js));
   }
 
-  /**
-   * @description This is a more user-friendly alternative to "executeJavascript"
-   * intended for only one method call, and it can include method arguments.
-   * This allows the user to simply type the method name instead of
-   * constructing a valid Javascript blob.
-   * @example executeMethod("add", 3, 4) will call the method add(3, 4);
-   */
-  executeMethod(name: string, ...args: any[]) {
-    console.log(`${name}(${stringifyArgs(...args)})`);
-    return this.executeJavascript(`${name}(${stringifyArgs(...args)})`);
-  }
+	/**
+	 * @description This is a more user-friendly alternative to "executeJavascript"
+	 * intended for only one method call, and it can include method arguments.
+	 * This allows the user to simply type the method name instead of
+	 * constructing a valid Javascript blob.
+	 * @example executeMethod("add", 3, 4) will call the method add(3, 4);
+	 */
+	executeMethod(name: string, ...args: any[]) {
+		const js = `${name}(${stringifyArgs(...args)})`;
+		return this.executeJavascript(js);
+	}
 
 	undo(): any {
 		const latest = this.history.pop();

@@ -5,13 +5,20 @@
 		TerminalTextareaValue,
 	} from "../stores/dom.ts";
 
-	let pre: Element;
-	// todo: this is not firing
-	$effect(() => { pre.scrollTop = pre.scrollHeight; });
+	// when the text area content updates, scroll to the bottom of the container.
+	// the history is sorted newest-bottom, the old history will scroll
+	// off the screen at the top.
+	let historyContainer: Element;
+	$effect(() => {
+		$TerminalTextareaValue;
+		historyContainer.scrollTop = historyContainer.scrollHeight;
+	});
 </script>
 
 <div class="container">
-	<pre bind:this={pre}>{@html $TerminalHistoryHTMLString}</pre>
+	<div class="history-container" bind:this={historyContainer}>
+		<pre>{@html $TerminalHistoryHTMLString}</pre>
+	</div>
 	<textarea
 		bind:this={$TerminalTextarea}
 		bind:value={$TerminalTextareaValue}
@@ -21,20 +28,33 @@
 </div>
 
 <style>
+	/* this contains the terminal history (pre) and the terminal input (textarea) */
 	.container {
 		width: 100%;
 		height: 100%;
 		display: flex;
 		flex-direction: column;
 	}
+	/* this conainer maintains a bottom-justification for the pre span elements */
+	/* while functioning as a container for scrollable content (pre is scrollable) */
+	.history-container {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		overflow-x: hidden;
+		overflow-y: auto;
+		background-color: #292929;
+	}
 	pre, textarea {
 		margin: 0;
 		padding: 0 0.25rem;
 	}
 	pre {
-		flex: 1 1 auto;
-		overflow-x: hidden;
-		overflow-y: scroll;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		min-height: 0;
 		font-family: monospace;
 		background-color: #292929;
 	}
@@ -63,7 +83,6 @@
 		outline-color: transparent;
 		background-color: #444;
 	}
-
 	pre :global(.error) { color: var(--red); }
 	pre :global(.return) { color: var(--dim); }
 	pre :global(.prompt-symbol) { color: var(--dim); }
@@ -73,14 +92,14 @@
 	pre :global(.WhiteSpace) { color: var(--text); }
 	pre :global(.StringLiteral) { color: var(--yellow); }
 	/* these have not been seen yet, setting purple by default */
-  pre :global(.NoSubstitutionTemplate) { color: var(--purple); }
-  pre :global(.TemplateHead) { color: var(--purple); }
-  pre :global(.TemplateMiddle) { color: var(--purple); }
-  pre :global(.TemplateTail) { color: var(--purple); }
-  pre :global(.RegularExpressionLiteral) { color: var(--purple); }
-  pre :global(.MultiLineComment) { color: var(--purple); }
-  pre :global(.SingleLineComment) { color: var(--purple); }
-  pre :global(.PrivateIdentifier) { color: var(--purple); }
-  pre :global(.LineTerminatorSequence) { color: var(--purple); }
-  pre :global(.Invalid) { color: var(--purple); }
+	pre :global(.NoSubstitutionTemplate) { color: var(--purple); }
+	pre :global(.TemplateHead) { color: var(--purple); }
+	pre :global(.TemplateMiddle) { color: var(--purple); }
+	pre :global(.TemplateTail) { color: var(--purple); }
+	pre :global(.RegularExpressionLiteral) { color: var(--purple); }
+	pre :global(.MultiLineComment) { color: var(--purple); }
+	pre :global(.SingleLineComment) { color: var(--purple); }
+	pre :global(.PrivateIdentifier) { color: var(--purple); }
+	pre :global(.LineTerminatorSequence) { color: var(--purple); }
+	pre :global(.Invalid) { color: var(--purple); }
 </style>

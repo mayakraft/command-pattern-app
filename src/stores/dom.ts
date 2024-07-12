@@ -1,12 +1,13 @@
 import { writable } from "svelte/store";
 
 /**
- * @description DOM element references.
+ * @description DOM element reference for the textarea,
+ * the "input" to the terminal.
  */
 export const TerminalTextarea = writable<HTMLTextAreaElement>(undefined);
 
 /**
- * @description The current value of the terminal input
+ * @description The current value of the terminal input.
  * @note We can't bind an event directly to the state of the string,
  * instead we have to watch for the keyboard events directly. For example,
  * we want to fire the event after a "Return" key, but not after a

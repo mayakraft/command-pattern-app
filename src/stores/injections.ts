@@ -1,6 +1,5 @@
-// in the old app, what were called "Modifiers" should be
-// renamed to "Injectors" or "Injections".
-// The concept of a "modifier" should exist, but it should
-// more reflect the modifiers in Blender.
-
+// An injection can be a behavior pattern where, before executing a command,
+// if a command has been identified in the user's input, a list of injections
+// can be called, if one operates on this command it can modify the user's
+// input, returning a modified command list that gets passed to the invoker.
 export const Injections = {};

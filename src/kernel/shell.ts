@@ -9,7 +9,8 @@ const hoist = Object.keys(scope)
 	.join("\n");
 
 /**
- * @description run a Javascript blob in a context.
+ * @description run a Javascript blob in a context. In the case of an error,
+ * error will be caught and returned, not thrown.
  * @param {string} jsBlob a snippet of Javascript code to be run
  * @param {object} scope the context to be bound to the function
  * @returns {any} whatever the Javascript code was meant to return
@@ -24,15 +25,11 @@ const scopedEval = (jsBlob: string, scope: object): any => {
 	// hoist = hoist + fileString;
 	try {
 		return Function(`${line0} ${hoist}; return (${jsBlob})`).bind(scope)();
-		// return Function(`${line0} ${hoist}; with (this) { return (${jsBlob}); }`).bind(scope)();
 	} catch (e) {
 		try {
 			return Function(`${line0} ${hoist}; ${jsBlob}`).bind(scope)();
-			// return Function(`${line0} ${hoist}; with (this) { ${jsBlob} }`).bind(scope)();
 		} catch (error) {
-      return error;
-			// throw error;
-			// console.error(error);
+			return error;
 		}
 	}
 };
@@ -45,27 +42,12 @@ const scopedEval = (jsBlob: string, scope: object): any => {
  * @param {string} js a valid Javascript blob
  * @returns {any} whatever is the result of executing the javascript
  */
-export const execute = (js: string): object[] => (
-	scopedEval(js, scope)
-);
+export const execute = (js: string): object[] => (scopedEval(js, scope));
 
+// // injections might work this way
 // export const execute = (js: string) => {
 // 	const commands = [js];
-// 	get(Injections).forEach((modifier) => modifier.execute(commands));
+// 	get(Injections).forEach((injection) => injection.execute(commands));
 // 	// add to the undo stack. clear the redo stack
 // 	return commands.flatMap((command) => scopedEval(command, scope));
 // };
-
-const stringifyArgs = (...args: any[]): string => (
-	`${args.map((v) => JSON.stringify(v)).join(", ")})`
-);
-
-/**
- * @description This is a more user-friendly alternative to "execute"
- * intended for only one method call, and it can include method arguments.
- * This allows the user to simply type the method name instead of
- * constructing a valid Javascript blob.
- */
-export const executeCommand = (name: string, ...args: any[]) =>
-	// execute(`${name}(${args.map((v) => JSON.stringify(v)).join(", ")})`);
-	execute(`${name}(${stringifyArgs(...args)})`);
