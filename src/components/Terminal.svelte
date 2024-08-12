@@ -35,6 +35,7 @@
 		display: flex;
 		flex-direction: column;
 	}
+
 	/* this conainer maintains a bottom-justification for the pre span elements */
 	/* while functioning as a container for scrollable content (pre is scrollable) */
 	.history-container {
@@ -46,10 +47,12 @@
 		overflow-y: auto;
 		background-color: #292929;
 	}
+
 	pre, textarea {
 		margin: 0;
 		padding: 0 0.25rem;
 	}
+
 	pre {
 		display: flex;
 		flex-direction: column;
@@ -58,6 +61,7 @@
 		font-family: monospace;
 		background-color: #292929;
 	}
+
 	/* all text selection has been disabled in the app. */
 	/* we have to explicitly re-enable it here */
 	pre :global(*) {
@@ -65,24 +69,28 @@
 		user-select: initial;
 		cursor: auto;
 	}
+
 	pre :global(.result::before) {
 		content: "> ";
 		color: #888;
 	}
+
 	textarea {
 		height: 1rem;
 		flex: 0 0 auto;
 		resize: none;
-		border: 1px solid transparent;
+		border: 0;
 		outline-color: transparent;
-		background-color: #444;
+		background-color: #393939;
 	}
+
 	textarea:focus {
-		outline: none !important;
-		border: 1px solid #863;
+		border: 0;
 		outline-color: transparent;
-		background-color: #444;
+		outline: none !important;
+		background-color: #393939;
 	}
+
 	pre :global(.error) { color: var(--red); }
 	pre :global(.return) { color: var(--dim); }
 	pre :global(.prompt-symbol) { color: var(--dim); }

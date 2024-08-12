@@ -1,7 +1,8 @@
 import { type Command } from "./command.ts";
 import { formatJavascript } from "../js/format.ts";
 
-export class ChangeBackgroundColorCommand implements Command {
+export class BackgroundColorCommand implements Command {
+	static name: string = "background";
 	private color: string;
 	private previousColor: string | null;
 
@@ -12,7 +13,7 @@ export class ChangeBackgroundColorCommand implements Command {
 	}
 
 	get asString(): string {
-		return `background(${JSON.stringify(this.color)})`;
+		return `${BackgroundColorCommand.name}(${JSON.stringify(this.color)})`;
 	}
 
 	get asTokenString(): string {
