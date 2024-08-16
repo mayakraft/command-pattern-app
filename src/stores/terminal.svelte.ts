@@ -1,5 +1,3 @@
-// import { get, writable, derived } from "svelte/store";
-import { get } from "svelte/store";
 import { invoker } from "../kernel/invoker.svelte.ts";
 
 /**
@@ -7,18 +5,13 @@ import { invoker } from "../kernel/invoker.svelte.ts";
  * line contains one history element, wrapped inside of an HTML span
  * element, with a class indicating if it was a result or not.
  */
-// export const TerminalHistoryHTMLString = derived(
-// 	invoker.historyAsHTML,
-// 	($entries) => $entries.join("\n"),
-// 	"",
-// );
 export const TerminalHistoryHTMLString = (() => {
-  const value = $derived(invoker.historyAsHTML.join("\n"));
-  return {
-    get value() {
-      return value;
-    },
-  };
+	const value = $derived(invoker.historyAsHTML.join("\n"));
+	return {
+		get value() {
+			return value;
+		},
+	};
 })();
 
 /**
@@ -27,13 +20,12 @@ export const TerminalHistoryHTMLString = (() => {
  * or an empty string if length of 0.
  */
 const getCommandFromHistory = (index: number): string => {
-  const arr = get(invoker.commandHistory);
-  if (!arr.length) {
-    return "";
-  }
-  let arrayIndex = index % arr.length;
-  arrayIndex += arrayIndex < 0 ? arr.length : 0;
-  return arr[arrayIndex];
+	if (!invoker.commandHistory.length) {
+		return "";
+	}
+	let arrayIndex = index % invoker.commandHistory.length;
+	arrayIndex += arrayIndex < 0 ? invoker.commandHistory.length : 0;
+	return invoker.commandHistory[arrayIndex];
 };
 
 /**
@@ -44,37 +36,24 @@ const getCommandFromHistory = (index: number): string => {
  * effect will fire, one which will get() the invoker.commandHistory and
  * return the string of the currently selected command in the history.
  */
-// export const TerminalReprint = {
-// 	...writable(0),
-// 	increment: (): string => {
-//     let index = 0;
-//     TerminalReprint.update(n => { index = n + 1; return index; });
-//     return getCommandFromHistory(index);
-// 	},
-// 	decrement: (): string => {
-//     let index = 0;
-//     TerminalReprint.update(n => { index = n - 1; return index; });
-//     return getCommandFromHistory(index);
-// 	},
-// };
 export const TerminalReprint = (() => {
-  let value = $state(0);
-  return {
-    get value() {
-      return value;
-    },
-    set value(newValue) {
-      value = newValue;
-    },
-    increment: (): string => {
-      value += 1;
-      return getCommandFromHistory(value);
-    },
-    decrement: (): string => {
-      value -= 1;
-      return getCommandFromHistory(value);
-    },
-  };
+	let value = $state(0);
+	return {
+		get value() {
+			return value;
+		},
+		set value(newValue) {
+			value = newValue;
+		},
+		increment: (): string => {
+			value += 1;
+			return getCommandFromHistory(value);
+		},
+		decrement: (): string => {
+			value -= 1;
+			return getCommandFromHistory(value);
+		},
+	};
 })();
 
 // /**

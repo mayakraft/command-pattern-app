@@ -8,8 +8,9 @@ export class BackgroundColorCommand implements Command {
 
 	constructor(color: string) {
 		this.color = color;
-		this.previousColor = document.body.style.backgroundColor
-			|| getComputedStyle(document.body)["background-color"];
+		this.previousColor =
+			document.body.style.backgroundColor ||
+			getComputedStyle(document.body)["background-color"];
 	}
 
 	get asString(): string {
@@ -21,8 +22,9 @@ export class BackgroundColorCommand implements Command {
 	}
 
 	execute(): any {
-		this.previousColor = document.body.style.backgroundColor
-			|| getComputedStyle(document.body)["background-color"];
+		this.previousColor =
+			document.body.style.backgroundColor ||
+			getComputedStyle(document.body)["background-color"];
 		document.body.style.backgroundColor = this.color;
 	}
 
@@ -30,7 +32,6 @@ export class BackgroundColorCommand implements Command {
 		if (this.previousColor) {
 			document.body.style.backgroundColor = this.previousColor;
 		} else {
-
 		}
 	}
 }

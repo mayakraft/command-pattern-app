@@ -2,14 +2,14 @@ import { type Command } from "./command.ts";
 import { formatJavascript } from "../js/format.ts";
 
 export class CursorCommand implements Command {
-  static name: string = "cursor";
+	static name: string = "cursor";
 	private cursor: string;
 	private previousCursor: string | null;
 
 	constructor(cursor: string) {
 		this.cursor = cursor;
-		this.previousCursor = document.body.style.cursor
-			|| getComputedStyle(document.body)["cursor"];
+		this.previousCursor =
+			document.body.style.cursor || getComputedStyle(document.body)["cursor"];
 	}
 
 	get asString(): string {
@@ -21,8 +21,8 @@ export class CursorCommand implements Command {
 	}
 
 	execute(): any {
-		this.previousCursor = document.body.style.cursor
-			|| getComputedStyle(document.body)["cursor"];
+		this.previousCursor =
+			document.body.style.cursor || getComputedStyle(document.body)["cursor"];
 		document.body.style.cursor = this.cursor;
 	}
 
@@ -30,7 +30,6 @@ export class CursorCommand implements Command {
 		if (this.previousCursor) {
 			document.body.style.cursor = this.previousCursor;
 		} else {
-
 		}
 	}
 }

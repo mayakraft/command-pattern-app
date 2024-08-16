@@ -5,8 +5,8 @@ const shouldUseStrict = true;
 // transfer all methods/constants from inside the "this."
 // and into the top level of the scope.
 const hoist = Object.keys(scope)
-  .map((name) => `var ${name} = this.${name};`)
-  .join("\n");
+	.map((name) => `var ${name} = this.${name};`)
+	.join("\n");
 
 /**
  * @description run a Javascript blob in a context. In the case of an error,
@@ -19,19 +19,19 @@ const hoist = Object.keys(scope)
  * "undefined" if nothing is returned.
  */
 const scopedEval = (jsBlob: string, scope: object): any => {
-  const line0 = shouldUseStrict ? '"use strict";' : ";";
-  // const fileString = files
-  // 	.map(f => `var ${f.name} = this.${f.name};`).join("");
-  // hoist = hoist + fileString;
-  try {
-    return Function(`${line0} ${hoist}; return (${jsBlob})`).bind(scope)();
-  } catch (e) {
-    try {
-      return Function(`${line0} ${hoist}; ${jsBlob}`).bind(scope)();
-    } catch (error) {
-      return error;
-    }
-  }
+	const line0 = shouldUseStrict ? '"use strict";' : ";";
+	// const fileString = files
+	// 	.map(f => `var ${f.name} = this.${f.name};`).join("");
+	// hoist = hoist + fileString;
+	try {
+		return Function(`${line0} ${hoist}; return (${jsBlob})`).bind(scope)();
+	} catch (e) {
+		try {
+			return Function(`${line0} ${hoist}; ${jsBlob}`).bind(scope)();
+		} catch (error) {
+			return error;
+		}
+	}
 };
 
 /**

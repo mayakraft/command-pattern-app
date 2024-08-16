@@ -69,17 +69,22 @@ const stringifyAny = (el: any): string => {
 // 	}
 // 	return undefined;
 // };
-export const formatCommandResult = (result: any): string|undefined => {
+export const formatCommandResult = (result: any): string | undefined => {
 	if (result == null) {
 		return undefined;
 	}
 	// &gt;
 	switch (typeof result) {
-		case "boolean": return `${result}`;
-		case "number": return `${result}`;
-		case "string": return capLength(result);
-		case "object": return capLength(JSON.stringify(result));
-		case "function": break;
+		case "boolean":
+			return `${result}`;
+		case "number":
+			return `${result}`;
+		case "string":
+			return capLength(result);
+		case "object":
+			return capLength(JSON.stringify(result));
+		case "function":
+			break;
 	}
 	return undefined;
 };

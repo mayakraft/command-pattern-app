@@ -8,9 +8,9 @@ import { invoker } from "./invoker.svelte.ts";
 // the context which will bind to the Function's this.
 // const context = Object.assign({ ...ear }, Commands);
 export const scope = {
-  // invoker,
-  [BackgroundColorCommand.name]: (color: string) =>
-    invoker.executeCommand(new BackgroundColorCommand(color)),
-  [CursorCommand.name]: (cursor: string) =>
-    invoker.executeCommand(new CursorCommand(cursor)),
+	// invoker,
+	[BackgroundColorCommand.name]: (color: string) =>
+		invoker.executeCommand(new BackgroundColorCommand(color)),
+	[CursorCommand.name]: (cursor: string) =>
+		invoker.executeCommand(new CursorCommand(cursor)),
 };

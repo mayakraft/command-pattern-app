@@ -1,4 +1,3 @@
-
 /**
  * @description Query the document.activeElement and depending on
  * which element is active, return true if that element is a form
