@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { KeyboardDown, KeyboardUp } from "../stores/events.ts";
+	import { KeyboardDown, KeyboardUp } from "../stores/events.svelte.ts";
 
-	const keydown = (e: KeyboardEvent) => $KeyboardDown(e);
-	const keyup = (e: KeyboardEvent) => $KeyboardUp(e);
+	const keydown = (e: KeyboardEvent) => KeyboardDown.value(e);
+	const keyup = (e: KeyboardEvent) => KeyboardUp.value(e);
 </script>
 
 <svelte:window

@@ -1,27 +1,24 @@
 <script lang="ts">
-	import { TerminalHistoryHTMLString } from "../stores/terminal.ts";
-	import {
-		TerminalTextarea,
-		TerminalTextareaValue,
-	} from "../stores/dom.ts";
+	import { TerminalHistoryHTMLString } from "../stores/terminal.svelte.ts";
+	import { TerminalTextarea } from "../stores/dom.svelte.ts";
 
 	// when the text area content updates, scroll to the bottom of the container.
 	// the history is sorted newest-bottom, the old history will scroll
 	// off the screen at the top.
 	let historyContainer: Element;
 	$effect(() => {
-		$TerminalTextareaValue;
+		TerminalTextarea.value;
 		historyContainer.scrollTop = historyContainer.scrollHeight;
 	});
 </script>
 
 <div class="container">
 	<div class="history-container" bind:this={historyContainer}>
-		<pre>{@html $TerminalHistoryHTMLString}</pre>
+		<pre>{@html TerminalHistoryHTMLString.value}</pre>
 	</div>
 	<textarea
-		bind:this={$TerminalTextarea}
-		bind:value={$TerminalTextareaValue}
+		bind:this={TerminalTextarea.element}
+		bind:value={TerminalTextarea.value}
 		autocomplete="off"
 		autocorrect="off"
 		rows="1"></textarea>
