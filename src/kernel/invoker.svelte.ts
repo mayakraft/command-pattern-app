@@ -37,6 +37,7 @@ export type CommandAndResult = {
 
 class Invoker {
 	public history = $state<CommandAndResult[]>([]);
+	public redoStack = $state<CommandAndResult[]>([]);
 
 	/**
 	 * @description An array of the history of the command inputs.
@@ -72,6 +73,8 @@ class Invoker {
 		} else {
 			this.history.push({ command, result });
 		}
+		// clear the redo history
+		this.redoStack = [];
 		return result;
 	}
 
@@ -98,11 +101,42 @@ class Invoker {
 			return;
 		}
 		const { command, result } = latest;
+		this.redoStack.push(latest);
 		if (command) {
 			return command.undo();
 		} else {
 			console.log("No commands to undo.");
 		}
+		// should we return anything?
+	}
+
+	redo(): any {
+		const latest = this.redoStack.pop();
+		if (!latest) {
+			console.log("no command to redo");
+			return;
+		}
+		const { command, result } = latest;
+		if (command) {
+			// we need an entire copy of the "execute" call but without the
+			// clearing of the redoStack at the end.
+			// the rest of this block is copied code. refactor at some point
+			const res = command.execute();
+			const result = new CommandResult(res);
+			// an alternative to this system of checking might be to always print out the
+			// javascript command, perhaps give it a class="metadata" third type of class,
+			// always print the javascript command and possibly? print out the other
+			// commands...? maybe. not sure how undo would work though.
+			if (
+				command instanceof JavascriptCommand &&
+				matchFromArray(command.asString, Object.keys(scope)).length
+			) {
+				// console.log(`! 3b invoker: skipping javascript command ${command.asString}`);
+			} else {
+				this.history.push({ command, result });
+			}
+		}
+		// should we return anything?
 	}
 }
 

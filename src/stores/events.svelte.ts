@@ -34,7 +34,7 @@ const FormKeyboardDown = $derived((event: KeyboardEvent) => {
 			case "Z":
 				if (metaKey || ctrlKey) {
 					if (shiftKey) {
-						// invoker.redo();
+						invoker.redo();
 					} else {
 						invoker.undo();
 					}
